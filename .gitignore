@@ -1,27 +1,53 @@
-# Environment variables
-.env
-.env.local
-*/.env
-**/.env
-
-# Keep the example templates tracked
-!.env.example
-!*/.env.example
-
+# =========================
 # Python
+# =========================
 __pycache__/
-*.pyc
-.venv/
+*.py[cod]
+*.pyo
+*.pyd
+
+# Virtual Environments
 venv/
+.venv/
+env/
+backend/venv/
+backend/.venv/
 
-# Node
-node_modules/
-dist/
+# Environment Files
+frontend/.env
+backend/.env
 
-# Vector DB / data
+# =========================
+# Frontend (React + Vite)
+# =========================
+frontend/node_modules/
+frontend/dist/
+
+# =========================
+# Backend
+# =========================
+*.sqlite3
+*.db
+
+# Logs
+*.log
+
+# =========================
+# ChromaDB
+# =========================
 data/chroma_db/
-data/pdfs/*
-!data/pdfs/.gitkeep
 
+# Uploaded PDFs
+data/pdfs/
+
+# =========================
+# IDE
+# =========================
+.vscode/
+.idea/
+
+# =========================
 # OS
+# =========================
 .DS_Store
+Thumbs.db
