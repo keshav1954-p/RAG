@@ -456,6 +456,7 @@ function Chat({
   isThinking,
   scope,
   setScope,
+  onNewConversation,
 }: {
   messages: ChatMessage[];
   query: string;
@@ -464,6 +465,7 @@ function Chat({
   isThinking: boolean;
   scope: string;
   setScope: (v: string) => void;
+  onNewConversation: () => void;
 }) {
   const [sourcesOpen, setSourcesOpen] = useState(true);
   const [details, setDetails] = useState(false);
@@ -476,6 +478,13 @@ function Chat({
     modelProvider === "API"
       ? ["GPT-4o", "GPT-4o mini", "Claude 3.5 Sonnet"]
       : ["Llama 3.1 8B", "Mistral 7B Instruct", "Phi-3 Mini"];
+  useEffect(() => {
+    const viewport = window.matchMedia("(max-width: 760px)");
+    const syncPanels = () => setSourcesOpen(!viewport.matches);
+    syncPanels();
+    viewport.addEventListener("change", syncPanels);
+    return () => viewport.removeEventListener("change", syncPanels);
+  }, []);
   return (
     <div className="chat-layout">
       <aside
@@ -485,6 +494,8 @@ function Chat({
           <strong>Conversations</strong>
           <button
             className="icon-button"
+            aria-label={historyOpen ? "Collapse conversations" : "Expand conversations"}
+            aria-expanded={historyOpen}
             onClick={() => setHistoryOpen(!historyOpen)}
           >
             <Icon name="chevron" size={15} />
@@ -496,16 +507,30 @@ function Chat({
             <small>Today · 5 messages</small>
           </button>
         ))}
-        <button className="button secondary full">
+        <button
+          className="button secondary full"
+          onClick={onNewConversation}
+        >
           <Icon name="plus" size={15} /> New conversation
         </button>
       </aside>
       <section className="conversation-center">
         <div className="chat-toolbar">
           <div className="chat-toolbar-heading">
-            <span className="eyebrow">KNOWLEDGE CHAT</span>
-            <h1>Ask your workspace</h1>
-            <small className="scope-label">Scope: {scope}</small>
+            <div className="chat-heading-copy">
+              <span className="eyebrow">KNOWLEDGE CHAT</span>
+              <h1>Ask your workspace</h1>
+              <small className="scope-label">Scope: {scope}</small>
+            </div>
+            <button
+              className="sources-toggle"
+              aria-expanded={sourcesOpen}
+              onClick={() => setSourcesOpen(!sourcesOpen)}
+            >
+              <Icon name="file" size={14} />
+              <span>Sources</span>
+              <b>{last?.sources?.length ?? 0}</b>
+            </button>
           </div>
           <div className="chat-controls">
             <label className="chat-control">
@@ -580,7 +605,7 @@ function Chat({
             </label>
           </div>
         </div>
-        <div className="message-list">
+        <div className={`message-list ${messages.length === 0 ? "empty" : ""}`}>
           {messages.length === 0 && (
             <div className="empty-chat">
               <div className="brand-mark">
@@ -650,6 +675,7 @@ function Chat({
             className="button primary send-button"
             onClick={ask}
             disabled={isThinking || !query.trim()}
+            aria-label="Send message"
           >
             <Icon name="send" size={16} />
           </button>
@@ -661,6 +687,8 @@ function Chat({
           <strong>Sources</strong>
           <button
             className="icon-button"
+            aria-label={sourcesOpen ? "Hide sources" : "Show sources"}
+            aria-expanded={sourcesOpen}
             onClick={() => setSourcesOpen(!sourcesOpen)}
           >
             <Icon name="chevron" size={15} />
@@ -1141,7 +1169,9 @@ function App() {
             <div className="avatar small">KS</div>
           </div>
         </header>
-        <div className="page-container">
+        <div
+          className={`page-container ${page === "Chat" ? "chat-page-container" : ""}`}
+        >
           {page === "Overview" && (
             <Overview
               onNavigate={navigate}
@@ -1160,6 +1190,10 @@ function App() {
               ask={ask}
               scope={scope}
               setScope={setScope}
+              onNewConversation={() => {
+                setMessages([]);
+                setQuery("");
+              }}
             />
           )}
           {page === "RAG Playground" && <Playground />}
