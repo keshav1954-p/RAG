@@ -16,7 +16,7 @@ Run `npm run dev` from this directory to start the frontend. Use `npm run build`
 
 ## FastAPI integration
 
-Set `VITE_API_URL` in `.env` to `http://127.0.0.1:8000`. Chat, login, file upload, history, and the non-blocking API health indicator use the endpoint modules under `src/api/`.
+The frontend defaults `VITE_API_URL` to `/api`; Vite proxies those requests to `http://127.0.0.1:8000` on the development machine. Run `npm run dev` and open the displayed network URL on a phone connected to the same network. The API stays on the development machine, so the phone does not try to contact its own `localhost`, and the dev proxy avoids browser CORS restrictions. Set `VITE_API_PROXY_TARGET` if the local backend uses another address. For a production deployment, configure the web server/reverse proxy to forward `/api` to FastAPI, or set `VITE_API_URL` to a publicly reachable API origin with matching CORS configuration. Chat, login, file upload, history, and the non-blocking API health indicator use the endpoint modules under `src/api/`.
 
 The current backend is intentionally limited: chat returns an acknowledgment rather than a generated RAG answer; login/register currently acknowledge requests without validating credentials or returning session tokens; history does not yet return conversations; and upload currently accepts PDF only and confirms receipt without parsing or indexing. The UI reports these limitations and does not generate citations, retrieval results, history records, or processing status. Google sign-in remains unavailable until an OAuth endpoint exists. Registration has no frontend flow yet.
 

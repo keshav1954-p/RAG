@@ -139,7 +139,16 @@ export function ChatPage({
             </details>
 
             <details className="chat-dropdown chat-settings-dropdown">
-              <summary>
+              <summary
+                onClick={(event) => {
+                  const top =
+                    event.currentTarget.getBoundingClientRect().bottom + 8;
+                  event.currentTarget.parentElement?.style.setProperty(
+                    "--settings-menu-top",
+                    `${top}px`,
+                  );
+                }}
+              >
                 <Icon name="sliders" size={15} />
                 <span>Chat settings</span>
                 <Icon name="chevron" size={14} />
